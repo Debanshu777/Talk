@@ -5,6 +5,9 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import com.example.talk.Adapter.SlidePagerAdapter;
+import com.example.talk.Adapter.ViewPagerAdapter;
+
 
 public class MainActivity extends AppCompatActivity {
     private ViewPager pager;

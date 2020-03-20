@@ -1,9 +1,13 @@
-package com.example.talk;
+package com.example.talk.Adapter;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
+
+import com.example.talk.Fragment.CallFragment;
+import com.example.talk.Fragment.ChatRoom;
+import com.example.talk.Fragment.MapView;
 
 import java.util.List;
 
