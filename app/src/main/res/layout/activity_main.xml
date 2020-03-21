@@ -16,11 +16,11 @@
         android:layout_gravity="bottom"
         app:tabIndicatorGravity="top"
         app:tabIndicatorFullWidth="false"
-        android:background="#CCFFFFFF"
-        app:tabIndicatorHeight="4dp"
+        android:background="@drawable/fade"
+        app:tabIndicatorHeight="3dp"
         app:tabIndicatorAnimationDuration="@android:integer/config_longAnimTime"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        app:tabIndicatorColor="@color/colorPrimary"/>
+        app:tabIndicatorColor="@color/colorBackground"/>
 
 </FrameLayout>

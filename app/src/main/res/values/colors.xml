@@ -10,4 +10,9 @@
     <color name="idle_dot">#662D9CDB</color>
     <color name="ob_header">#4A4A4A</color>
     <color name="ob_desc">#4A4A4A</color>
+
+    <color name="colorBackground">#333C46</color>
+    <color name="colorSplashText">#F0F0F0</color>
+    <color name="colorProgressBar">#FFCE511C</color>
+    <color name="colorTextView">#83898E</color>
 </resources>
