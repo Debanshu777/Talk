@@ -41,7 +41,7 @@ public class UserListActivity extends AppCompatActivity {
                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                     Map<String,Object> userlist=documentSnapshot.getData();
                     String s= (String) userlist.get("username");
-                    users.add(new User(s));
+                    users.add(new User(documentSnapshot.getId(),s));
                     UserListRecyclerAdapter userListRecyclerAdapter=new UserListRecyclerAdapter(getApplicationContext(),users);
                     add_user_list.setLayoutManager(new LinearLayoutManager(UserListActivity.this,LinearLayoutManager.VERTICAL,false));
                     add_user_list.setAdapter(userListRecyclerAdapter);

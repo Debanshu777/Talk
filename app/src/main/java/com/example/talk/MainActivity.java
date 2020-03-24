@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
-        profile_dp=findViewById(R.id.user_profile_pic);
+        profile_dp=findViewById(R.id.profile_dp);
         appBar=findViewById(R.id.appbar);
         pager=findViewById(R.id.pager);
         tabLayout = findViewById(R.id.tab_layout);
