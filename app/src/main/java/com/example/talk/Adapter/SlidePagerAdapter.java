@@ -9,10 +9,7 @@ import com.example.talk.Fragment.CallFragment;
 import com.example.talk.Fragment.ChatRoom;
 import com.example.talk.Fragment.MapView;
 
-import java.util.List;
-
 public class SlidePagerAdapter extends FragmentStatePagerAdapter {
-    private List<Fragment> fragmentList;
     public SlidePagerAdapter(@NonNull FragmentManager fm) {
         super(fm);
     }

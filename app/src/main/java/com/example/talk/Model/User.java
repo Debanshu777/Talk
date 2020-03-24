@@ -17,11 +17,7 @@ public class User implements Parcelable {
         this.avatar = avatar;
     }
 
-    public User() {
-
-    }
-
-    protected User(Parcel in) {
+    public User(Parcel in) {
         email = in.readString();
         user_id = in.readString();
         username = in.readString();
@@ -39,6 +35,14 @@ public class User implements Parcelable {
             return new User[size];
         }
     };
+
+    public User(String username) {
+        this.username = username;
+    }
+
+    public User() {
+
+    }
 
     public String getAvatar() {
         return avatar;

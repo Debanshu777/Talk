@@ -23,12 +23,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.example.talk.Model.User;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -41,6 +50,7 @@ import static android.view.View.VISIBLE;
 public class LoginActivity extends AppCompatActivity {
 
     private ImageView bookIconImageView;
+    private static final int RC_SIGN_IN = 9001;
     private TextView bookITextView,signup;
     private Button loginBtn;
     private ProgressBar loadingProgressBar;
@@ -50,10 +60,14 @@ public class LoginActivity extends AppCompatActivity {
 
     //Firebase
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseFirestore mDb;
+    private FirebaseAuth mAuth;
+    private SignInButton signInButton;
 
     // widgets
     private EditText mEmail, mPassword;
     private ProgressBar mProgressBar;
+    GoogleSignInClient mGoogleSignInClient;
 
 
     @Override
@@ -64,7 +78,8 @@ public class LoginActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_login);
         initViews();
-
+        mDb = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
         new CountDownTimer(5000, 1000) {
 
             @Override
@@ -94,7 +109,19 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(new Intent(LoginActivity.this,RegisterActivity.class));
             }
         });
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signInG();
+            }
+        });
 
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .requestProfile()
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
     private void initViews() {
@@ -112,11 +139,98 @@ public class LoginActivity extends AppCompatActivity {
         setupFirebaseAuth();
         loginBtn=findViewById(R.id.loginButton);
         signup=findViewById(R.id.signup);
+        signInButton = findViewById(R.id.sign_in_button);
 
         hideSoftKeyboard();
 
         afterAnimationView = findViewById(R.id.afterAnimationView);
+
+
     }
+
+    //Auth with google
+    private void signInG() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
+
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithCredential:success");
+                            FirebaseUser user1 = mAuth.getCurrentUser();
+                            User user = new User();
+                            user.setEmail(user1.getEmail());
+                            user.setUsername(user1.getEmail().substring(0, user1.getEmail().indexOf("@")));
+                            user.setUser_id(FirebaseAuth.getInstance().getUid());
+
+                            FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                                    .setTimestampsInSnapshotsEnabled(true)
+                                    .build();
+                            mDb.setFirestoreSettings(settings);
+
+                            DocumentReference newUserRef = mDb
+                                    .collection(getString(R.string.collection_users))
+                                    .document(FirebaseAuth.getInstance().getUid());
+
+                            newUserRef.set(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    hideDialog();
+
+                                    if(task.isSuccessful()){
+                                        //redirectLoginScreen();
+                                    }else{
+                                        View parentLayout = findViewById(android.R.id.content);
+                                        Snackbar.make(parentLayout, "Something went wrong.", Snackbar.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
+                            //updateUI(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            //Snackbar.make(findViewById(R.id.main_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+                            //updateUI(null);
+                        }
+
+                        // ...
+                    }
+                });
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                firebaseAuthWithGoogle(account);
+            } catch (ApiException e) {
+                // Google Sign In failed, update UI appropriately
+                Log.w(TAG, "Google sign in failed", e);
+                // ...
+            }
+        }
+    }
+
+
+
+
+
+
+
+    //Auth with email and password
     private void setupFirebaseAuth(){
         Log.d(TAG, "setupFirebaseAuth: started.");
 
@@ -191,12 +305,22 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(LoginActivity.this, "You didn't fill in all the fields.", Toast.LENGTH_SHORT).show();
         }
     }
+
+
+
+
+
+
+
+
     @Override
     public void onStart() {
         super.onStart();
         FirebaseAuth.getInstance().addAuthStateListener(mAuthListener);
-    }
 
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+
+    }
     @Override
     public void onStop() {
         super.onStop();
@@ -204,22 +328,18 @@ public class LoginActivity extends AppCompatActivity {
             FirebaseAuth.getInstance().removeAuthStateListener(mAuthListener);
         }
     }
-
     private void showDialog(){
         mProgressBar.setVisibility(View.VISIBLE);
 
     }
-
     private void hideDialog(){
         if(mProgressBar.getVisibility() == View.VISIBLE){
             mProgressBar.setVisibility(View.INVISIBLE);
         }
     }
-
     private void hideSoftKeyboard(){
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
-
     private void startAnimation() {
         ViewPropertyAnimator viewPropertyAnimator = bookIconImageView.animate();
         viewPropertyAnimator.x(50f);
