@@ -1,32 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/single_user"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10sp"
-    android:id="@+id/single_user"
-    android:orientation="horizontal"
     android:gravity="center"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:layout_width="45dp"
-        android:id="@+id/user_profile_pic"
-        android:layout_marginRight="10dp"
-        app:civ_border_width="2dp"
-        app:civ_border_color="#fff"
-        android:src="@mipmap/ic_launcher"
-        android:layout_height="45dp"/>
+    android:orientation="horizontal"
+    android:padding="10sp">
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:padding="5dp"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:weightSum="1">
 
-        <TextView
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/user_profile_pic"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_weight="0.1"
+            android:layout_marginRight="10dp"
+            android:src="@mipmap/ic_launcher"
+            app:civ_border_color="#fff"
+            app:civ_border_width="2dp" />
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/username"
-            android:text="User Name"
-            android:textSize="20dp" />
+            android:orientation="vertical"
+            android:layout_weight="0.7"
+            android:padding="5dp">
 
+            <TextView
+                android:id="@+id/username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="User Name"
+                android:textSize="20dp" />
+
+        </LinearLayout>
+        <CheckBox
+            android:id="@+id/checkbox"
+            android:layout_width="wrap_content"
+            android:layout_weight="0.1"
+            android:visibility="gone"
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 </LinearLayout>

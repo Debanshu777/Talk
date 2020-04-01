@@ -1,13 +1,12 @@
-package com.example.talk;
+package com.example.talk.Model;
 
 import android.app.Application;
-
-import com.example.talk.Model.User;
 
 
 public class UserClient extends Application {
 
     private User user = null;
+
 
     public User getUser() {
         return user;

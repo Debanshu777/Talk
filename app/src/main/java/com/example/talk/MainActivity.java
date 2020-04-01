@@ -1,5 +1,6 @@
 package com.example.talk;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -12,6 +13,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.example.talk.Adapter.SlidePagerAdapter;
 import com.example.talk.Adapter.ViewPagerAdapter;
+import com.example.talk.Model.SessionManagement;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -22,6 +24,11 @@ public class MainActivity extends AppCompatActivity {
     private com.google.android.material.tabs.TabLayout tabLayout;
     private FloatingActionButton adduser;
     private ImageView profile_dp;
+    private SessionManagement sessionManagement;
+    private Context context;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
+
+        sessionManagement = new SessionManagement(this);
+
         profile_dp=findViewById(R.id.profile_dp);
         appBar=findViewById(R.id.appbar);
         pager=findViewById(R.id.pager);
@@ -38,11 +48,11 @@ public class MainActivity extends AppCompatActivity {
         adduser=findViewById(R.id.adduser);
 
 
-        pager.setAdapter(new SlidePagerAdapter(getSupportFragmentManager()));
+        pager.setAdapter(new SlidePagerAdapter(getSupportFragmentManager(),getApplicationContext()));
 
 
         tabLayout.setupWithViewPager(pager);
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), 3);
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), 3,getApplicationContext());
         pager.setAdapter(viewPagerAdapter);
         pager.setCurrentItem(1);
         pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -69,7 +79,8 @@ public class MainActivity extends AppCompatActivity {
         adduser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this,UserListActivity.class));
+                startActivity(new Intent(MainActivity.this,UserListActivity.class).putExtra(
+                        "Sessionid",sessionManagement.getUserDocumentId()));
             }
         });
         profile_dp.setOnClickListener(new View.OnClickListener() {

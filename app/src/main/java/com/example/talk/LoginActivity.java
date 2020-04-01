@@ -22,7 +22,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.example.talk.Model.SessionManagement;
 import com.example.talk.Model.User;
+import com.example.talk.Model.UserClient;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -42,6 +44,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+
+import java.util.Objects;
 
 import static android.text.TextUtils.isEmpty;
 import static android.view.View.GONE;
@@ -63,6 +67,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseFirestore mDb;
     private FirebaseAuth mAuth;
     private SignInButton signInButton;
+    private SessionManagement sessionManagement;
 
     // widgets
     private EditText mEmail, mPassword;
@@ -78,8 +83,15 @@ public class LoginActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_login);
         initViews();
+
+
+
         mDb = FirebaseFirestore.getInstance();
+        sessionManagement=new SessionManagement(this);
         mAuth = FirebaseAuth.getInstance();
+
+
+
         new CountDownTimer(5000, 1000) {
 
             @Override
@@ -146,6 +158,7 @@ public class LoginActivity extends AppCompatActivity {
         afterAnimationView = findViewById(R.id.afterAnimationView);
 
 
+
     }
 
     //Auth with google
@@ -166,8 +179,9 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user1 = mAuth.getCurrentUser();
                             User user = new User();
+                            assert user1 != null;
                             user.setEmail(user1.getEmail());
-                            user.setUsername(user1.getEmail().substring(0, user1.getEmail().indexOf("@")));
+                            user.setUsername(Objects.requireNonNull(user1.getEmail()).substring(0, user1.getEmail().indexOf("@")));
                             user.setUser_id(FirebaseAuth.getInstance().getUid());
 
                             FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
@@ -176,16 +190,22 @@ public class LoginActivity extends AppCompatActivity {
                             mDb.setFirestoreSettings(settings);
 
                             DocumentReference newUserRef = mDb
-                                    .collection(getString(R.string.collection_users))
-                                    .document(FirebaseAuth.getInstance().getUid());
+                                    .collection("Users")
+                                    .document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()));
 
-                            newUserRef.set(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            newUserRef.set(user);
+                            newUserRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                 @Override
-                                public void onComplete(@NonNull Task<Void> task) {
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                                     hideDialog();
 
                                     if(task.isSuccessful()){
                                         //redirectLoginScreen();
+                                        User user = Objects.requireNonNull(task.getResult()).toObject(User.class);
+                                        assert user != null;
+                                        sessionManagement.createLoginSession(user.getEmail(),user.getUsername(),user.getUser_id());
+//                                        UserClient userClient=new UserClient();
+//                                        userClient.setUser(user);
                                     }else{
                                         View parentLayout = findViewById(android.R.id.content);
                                         Snackbar.make(parentLayout, "Something went wrong.", Snackbar.LENGTH_SHORT).show();
@@ -215,6 +235,7 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
+                assert account != null;
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
@@ -256,13 +277,15 @@ public class LoginActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                             if(task.isSuccessful()){
                                 Log.d(TAG, "onComplete: successfully set the user client.");
-                                User user = task.getResult().toObject(User.class);
+                                User user = Objects.requireNonNull(task.getResult()).toObject(User.class);
+                                assert user != null;
+                                sessionManagement.createLoginSession(user.getEmail(),user.getUsername(),user.getUser_id());
                                 UserClient userClient=new UserClient();
                                 userClient.setUser(user);
                             }
                         }
                     });
-
+                    //sessionManagement.createLoginSession();
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);

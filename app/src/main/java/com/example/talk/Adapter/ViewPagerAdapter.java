@@ -1,5 +1,7 @@
 package com.example.talk.Adapter;
 
+import android.content.Context;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -13,6 +15,7 @@ import com.example.talk.Fragment.MapView;
 public class ViewPagerAdapter extends FragmentPagerAdapter {
 
     private int tabCount;
+    private Context context;
 
     @Nullable
     @Override
@@ -35,16 +38,17 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
             case 0 :
                 return new MapView();
             case 1:
-                return new ChatRoom();
+                return new ChatRoom(context);
             case 2:
                 return new CallFragment();
         }
         return null;
     }
 
-    public ViewPagerAdapter(FragmentManager fm, int tabs) {
+    public ViewPagerAdapter(FragmentManager fm, int tabs, Context context) {
         super(fm);
         this.tabCount = tabs;
+        this.context=context;
     }
 
     @Override

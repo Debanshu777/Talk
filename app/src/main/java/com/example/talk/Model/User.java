@@ -9,30 +9,22 @@ public class User implements Parcelable {
     private String user_id;
     private String username;
     private String avatar;
-    private String chat_id;
 
-    public User(String email, String user_id, String username, String avatar,String chat_id) {
+    public User(String email, String user_id, String username, String avatar) {
         this.email = email;
         this.user_id = user_id;
         this.username = username;
         this.avatar = avatar;
-        this.chat_id = chat_id;
+
     }
 
-    public String getChat_id() {
-        return chat_id;
-    }
 
-    public void setChat_id(String chat_id) {
-        this.chat_id = chat_id;
-    }
 
     public User(Parcel in) {
         email = in.readString();
         user_id = in.readString();
         username = in.readString();
         avatar = in.readString();
-        chat_id=in.readString();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
