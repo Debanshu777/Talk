@@ -1,14 +1,17 @@
 package com.example.talk.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.talk.ChatActivity;
 import com.example.talk.Model.Private_Chatroom;
 import com.example.talk.Model.SessionManagement;
 import com.example.talk.R;
@@ -44,12 +47,18 @@ public class PrivateChatroomAdapter extends RecyclerView.Adapter<PrivateChatroom
         particular.setCreator(details.get(position).getCreator());
         particular.setChatroom_id(details.get(position).getChatroom_id());
 
-        if(sessionManagement.getUserName()==particular.getReceiver()){
+        if(sessionManagement.getUserName().equals(particular.getReceiver())){
             holder.display_name.setText(particular.getCreator());
         }
         else{
             holder.display_name.setText(particular.getReceiver());
         }
+        holder.chatrromrecycler.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                context.startActivity(new Intent(context, ChatActivity.class));
+            }
+        });
     }
 
     @Override
@@ -60,9 +69,11 @@ public class PrivateChatroomAdapter extends RecyclerView.Adapter<PrivateChatroom
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
         private TextView display_name;
+        private LinearLayout chatrromrecycler;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             display_name=itemView.findViewById(R.id.display_name);
+            chatrromrecycler=itemView.findViewById(R.id.chatroomrecycler);
         }
     }
 }

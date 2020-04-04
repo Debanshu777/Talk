@@ -33,7 +33,6 @@ public class MapView extends Fragment implements OnMapReadyCallback {
         View rootView=(View)inflater.inflate(R.layout.mapviewui,container,false);
         getLocationPermission();
         getLocationPermission();
-
         return rootView;
     }
     private void initMap(){

@@ -49,5 +49,6 @@ dependencies {
 
 
     implementation 'de.hdodenhof:circleimageview:3.0.1'
+    implementation 'com.google.android.libraries.places:places:1.0.0'
 
 }
