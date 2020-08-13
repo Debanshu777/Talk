@@ -8,10 +8,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.example.talk.Items.OnBoardItem;
-import com.example.talk.R;
 
 import java.util.ArrayList;
 
@@ -32,12 +32,13 @@ class OnBoardAdapter extends PagerAdapter {
     }
 
     @Override
-    public boolean isViewFromObject(View view, Object object) {
+    public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
         return view == object;
     }
 
+    @NonNull
     @Override
-    public Object instantiateItem(ViewGroup container, int position) {
+    public Object instantiateItem(@NonNull ViewGroup container, int position) {
         View itemView = LayoutInflater.from(mContext).inflate(R.layout.onboarditem, container, false);
 
         OnBoardItem item=onBoardItems.get(position);

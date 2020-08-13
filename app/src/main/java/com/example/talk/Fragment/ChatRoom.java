@@ -70,6 +70,7 @@ public class ChatRoom extends Fragment {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             Map<String,Object> chatdetails=documentSnapshot.getData();
+                            assert chatdetails != null;
                             String receiver= (String) chatdetails.get("receiver");
                             String creator=(String)chatdetails.get("creator");
                             String id=(String)chatdetails.get("chatroom_id");

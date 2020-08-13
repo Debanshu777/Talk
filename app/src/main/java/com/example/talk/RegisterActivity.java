@@ -145,29 +145,26 @@ public class RegisterActivity extends AppCompatActivity implements
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.btn_register:{
-                Log.d(TAG, "onClick: attempting to register.");
+        if (view.getId() == R.id.btn_register) {
+            Log.d(TAG, "onClick: attempting to register.");
 
-                //check for null valued EditText fields
-                if(!isEmpty(mEmail.getText().toString())
-                        && !isEmpty(mPassword.getText().toString())
-                        && !isEmpty(mConfirmPassword.getText().toString())){
+            //check for null valued EditText fields
+            if (!isEmpty(mEmail.getText().toString())
+                    && !isEmpty(mPassword.getText().toString())
+                    && !isEmpty(mConfirmPassword.getText().toString())) {
 
-                    //check if passwords match
-                    if(doStringsMatch(mPassword.getText().toString(), mConfirmPassword.getText().toString())){
+                //check if passwords match
+                if (doStringsMatch(mPassword.getText().toString(), mConfirmPassword.getText().toString())) {
 
-                        //Initiate registration task
-                        registerNewEmail(mEmail.getText().toString(), mPassword.getText().toString());
-                        startActivity(new Intent(RegisterActivity.this,LoginActivity.class));
-                    }else{
-                        Toast.makeText(RegisterActivity.this, "Passwords do not Match", Toast.LENGTH_SHORT).show();
-                    }
-
-                }else{
-                    Toast.makeText(RegisterActivity.this, "You must fill out all the fields", Toast.LENGTH_SHORT).show();
+                    //Initiate registration task
+                    registerNewEmail(mEmail.getText().toString(), mPassword.getText().toString());
+                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                } else {
+                    Toast.makeText(RegisterActivity.this, "Passwords do not Match", Toast.LENGTH_SHORT).show();
                 }
-                break;
+
+            } else {
+                Toast.makeText(RegisterActivity.this, "You must fill out all the fields", Toast.LENGTH_SHORT).show();
             }
         }
     }

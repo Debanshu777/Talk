@@ -2,6 +2,7 @@ package com.example.talk.Adapter;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -31,6 +32,7 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
         return null;
     }
 
+    @NonNull
     @Override
     public Fragment getItem(int position) {
 
